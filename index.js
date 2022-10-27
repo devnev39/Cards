@@ -5,9 +5,10 @@ import fbApp from './firebase-config.js'
 import {getUser,getRandom,getRandomName} from './randomCode.js'
 import _ from 'lodash'
 
+
 // gameCode => game code
 // playerId => player Id 
-
+const path = require("path");
 const database = getDatabase(fbApp);
 
 const PORT = process.env.PORT || 3001;
@@ -21,12 +22,12 @@ const app = express();
 
 app.use(bodyParser.json());
 
-// if(process.env.NODE_ENV == "production" || process.env.NODE_ENV == "staging"){
-app.use(express.static('client/build'));
-app.get("*",(req,res) => {
-    res.sendFile(path.join(__dirname+"/client/build/index.html"));
-});
-// }
+if(process.env.NODE_ENV == "production" || process.env.NODE_ENV == "staging"){
+    app.use(express.static('client/build/'));
+    app.get("*",(req,res) => {
+        res.sendFile(path.resolve(__dirname,'client','build','index.html'));
+    });
+}
 
 let maxCount = 0;
 
