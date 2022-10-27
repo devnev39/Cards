@@ -4,7 +4,8 @@ import bodyParser from 'body-parser'
 import fbApp from './firebase-config.js'
 import {getUser,getRandom,getRandomName} from './randomCode.js'
 import _ from 'lodash'
-import path from "path";
+import path from 'path'
+import {fileURLToPath} from 'url'
 
 // gameCode => game code
 // playerId => player Id
@@ -24,7 +25,7 @@ app.use(bodyParser.json());
 if(process.env.NODE_ENV === "production"){
     app.use(express.static('client/build/'));
     app.get("*",(req,res) => {
-        res.sendFile(path.resolve(__dirname,'client','build','index.html'));
+        res.sendFile(path.resolve(path.dirname(fileURLToPath(import.meta.url)),'client','build','index.html'));
     });
 }
 
