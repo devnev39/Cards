@@ -4,11 +4,10 @@ import bodyParser from 'body-parser'
 import fbApp from './firebase-config.js'
 import {getUser,getRandom,getRandomName} from './randomCode.js'
 import _ from 'lodash'
-
+import path from "path";
 
 // gameCode => game code
-// playerId => player Id 
-const path = require("path");
+// playerId => player Id
 const database = getDatabase(fbApp);
 
 const PORT = process.env.PORT || 3001;
@@ -22,7 +21,7 @@ const app = express();
 
 app.use(bodyParser.json());
 
-if(process.env.NODE_ENV == "production" || process.env.NODE_ENV == "staging"){
+if(process.env.NODE_ENV === "production"){
     app.use(express.static('client/build/'));
     app.get("*",(req,res) => {
         res.sendFile(path.resolve(__dirname,'client','build','index.html'));
