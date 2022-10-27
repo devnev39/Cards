@@ -10,17 +10,22 @@ import _ from 'lodash'
 
 const database = getDatabase(fbApp);
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 const gameCodeLen = 7;
 const playerIDLen = 5;
 const maxRemovalTimeOut = 600000;
 const completedGameRemoveTimeout = 120000;
 
-let playerAddrs = [];
-
 const app = express();
 
 app.use(bodyParser.json());
+
+if(process.env.NODE_ENV == "production" || process.env.NODE_ENV == "staging"){
+    app.use(express.static('client/build'));
+    app.get("*",(req,res) => {
+        res.sendFile(path.join(__dirname+"/client/build/index.html"));
+    });
+}
 
 let maxCount = 0;
 
