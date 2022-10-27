@@ -21,13 +21,7 @@ const completedGameRemoveTimeout = 120000;
 const app = express();
 
 app.use(bodyParser.json());
-
-if(process.env.NODE_ENV === "production"){
-    app.use(express.static('client/build/'));
-    app.get("*",(req,res) => {
-        res.sendFile(path.resolve(path.dirname(fileURLToPath(import.meta.url)),'client','build','index.html'));
-    });
-}
+app.use(bodyParser.urlencoded({extended : false}));
 
 let maxCount = 0;
 
@@ -323,6 +317,13 @@ app.route("/winner")
         res.json({message : "Invalid game !"});
     }
 });
+
+if(process.env.NODE_ENV === "production"){
+    app.use(express.static('client/build/'));
+    app.get("*",(req,res) => {
+        res.sendFile(path.resolve(path.dirname(fileURLToPath(import.meta.url)),'client','build','index.html'));
+    });
+}
 
 app.listen(PORT,async ()=> {
     await clearDatabase();

@@ -78,11 +78,15 @@ function Deck(){
                   body : JSON.stringify({gameCode : gameCode})
                 }
                 fetch("/winner",reponse).then(res => res.json()).then(res => {
-                  setHidden(false);
-                  setWinner(res.name);
-                  setCardValue((current) => processCards(current,Hidden));
-                  if(+playerId === +res.playerId){
-                    alert("You are winner !");
+                  if(res.message === undefined){
+                    setHidden(false);
+                    setWinner(res.name);
+                    setCardValue((current) => processCards(current,Hidden));
+                    if(+playerId === +res.playerId){
+                      alert("You are winner !");
+                    }
+                  }else{
+                    alert(`Error : ${res.message}`);
                   }
                 });
               },10000);
