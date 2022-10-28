@@ -23,8 +23,6 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended : false}));
 
-let maxCount = 0;
-
 //  activeGames -> an object which keeps active games information. Mainly if updateIsObserverd
 // {
 //     gameCode : {
@@ -39,9 +37,9 @@ let maxCount = 0;
 // }
 
 // Cleanup ==>
-// Delete games after 5 min
-// When server starts clear the database
-// After game is complete delete game within 2 minutes
+//      Delete games after 5 min
+//      When server starts clear the database
+//      After game is complete delete game within 2 minutes
 
 // also keep latest game snapshot val
 let activeGames = {};
@@ -76,7 +74,6 @@ app.post("/getIp",(req,res) => {
 
 app.route("/newGame")
 .post(async (req,res) => {
-    maxCount = req.body.playerCount;
     let dbref = ref(getDatabase());
     let gameCode = getRandom(gameCodeLen);
     const player = await getUser(playerIDLen);
@@ -102,10 +99,16 @@ app.route("/newGame")
 
     // Set local game object keeping track of active games
     const deleteGameCode = setTimeout(async () => {
-        clearGame(gameCode);
+        await clearGame(gameCode);
     },maxRemovalTimeOut);
-    activeGames[gameCode] = {won : undefined,deleteCode : deleteGameCode,completed : false};
-
+    
+    activeGames[gameCode] ={
+         won : undefined,
+         deleteCode : deleteGameCode,
+         completed : false,
+         maxCount : +req.body.playerCount
+    };
+    console.log(activeGames);
     // Set onUpdate method for this active game
     dbref = ref(getDatabase(),"Games/"+gameCode); // Reference to players of game
     onValue(dbref,async (snapshot) => {
@@ -115,7 +118,7 @@ app.route("/newGame")
             for(let p of Object.keys(snapshot.val().Players)){
                 if(snapshot.val().Players[p].Selection === -1) ready = false;
             }
-            if(Object.keys(snapshot.val().Players).length !== maxCount) ready = false;
+            if(Object.keys(snapshot.val().Players).length !== activeGames[gameCode].maxCount) ready = false;
             if(ready){
                 set(ref(database,"Games/"+gameCode),{
                     Players : snapshot.val().Players,
@@ -142,13 +145,10 @@ app.route("/newGame")
         gameCode : gameCode,
         playerId : player.playerID,
         name : player.name,
-        count : 5
+        count : activeGames[gameCode].maxCount
     }
     res.json(gameResponse);
 })
-.get((req,res) => {
-    res.json({count : 5});
-});
 
 app.route("/joinGame")
 .post((req,res) => {
@@ -158,7 +158,7 @@ app.route("/joinGame")
             let games = snapshot.val();
             if(Object.keys(games).indexOf(req.body.gameCode) != -1){    
                 let players = games[req.body.gameCode].Players;
-                if(Object.keys(players).length == 5){
+                if(Object.keys(players).length == +activeGames[req.body.gameCode].maxCount){
                     res.json({resp : false,message : "Game players limit reached !"});
                 }else{
                     // let playerId = getRandom(playerIDLen);
@@ -302,7 +302,7 @@ app.route("/winner")
     if(activeGames[req.body.gameCode]){
         if(activeGames[req.body.gameCode].completed){
             if(activeGames[req.body.gameCode].won==undefined){
-                let win = Math.round(Math.random()*(maxCount-1));
+                let win = Math.round(Math.random()*(activeGames[+req.body.gameCode].maxCount-1));
                 const out = _.shuffle(activeGames[req.body.gameCode].snapshot.Players);
                 win = Object.keys(activeGames[req.body.gameCode].snapshot.Players).find(key => activeGames[req.body.gameCode].snapshot.Players[key] == out[win]);
                 res.json({playerId : win});
@@ -315,6 +315,15 @@ app.route("/winner")
         }
     }else{
         res.json({message : "Invalid game !"});
+    }
+});
+
+app.get("/maxPlayers/:gameCode",(req,res) => {
+    if(activeGames[+req.params.gameCode]){
+        if(activeGames[+req.params.gameCode].maxCount) res.json({maxPlayers : activeGames[+req.params.gameCode].maxCount});
+        else res.json({message : "maxPlayer lximit not set !"});
+    }else{
+        res.json({message : "Game not found !"});
     }
 });
 

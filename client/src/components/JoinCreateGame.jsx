@@ -28,12 +28,12 @@ function JoinCreateGame(){
         OR
         <div className='gameOption makeCenter'>
           <button className="btn btn-warning" onClick={() => {
+            const maxPlayers = +prompt("Enter max no. of players : ");
             let request = {
               method : "POST",
               headers : {"content-type" : "application/json"},
-              body : JSON.stringify({playerCount : 5})
+              body : JSON.stringify({playerCount : maxPlayers})
             };
-            // let code = 0;
             fetch("/newGame",request).then((res) => res.json()).then((data) => {
                 navigate("/game/"+data.gameCode+"/"+data.playerId);
             });

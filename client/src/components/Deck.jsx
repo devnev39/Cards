@@ -8,20 +8,34 @@ let updateIntervalId = 0;
 let timerId = 0;
 
 function Deck(){
+    let {gameCode,playerId} = useParams();
+
     const [isValid, setisValid] = useState(false);
     const [isValidPlayer, setisValidPlayer] = useState(false);
 
     const [players, setPlayers] = useState({});
 
-    let cards = Array.from(Array(5).keys()).map((i) => Card(i+1,""));
-    const [cardsValue,setCardValue] = useState(cards);
+    const [maxPlayers,setmaxPlayers] = useState(0);
 
-    let {gameCode,playerId} = useParams();
+    useEffect(() => {
+      fetch(`/maxPlayers/${gameCode}`).then(res => res.json()).then(res => {
+        if(res.message) alert(`Error : ${res.message}`);
+        else setmaxPlayers(+res.maxPlayers);
+      });
+    },[]);
+  
+    const cards = Array.from(Array(maxPlayers).keys()).map((i) => Card(i+1,""));
+    const [cardsValue,setCardValue] = useState(cards);
+    
+    useEffect(() => {
+      const c = [...cards];
+      if(cardsValue.join() !== c.join()){
+        setCardValue(c);
+      }
+    }, [cards, cardsValue]);
 
     const [Seconds,setSeconds] = useState(10);
-
     const [Hidden,setHidden] = useState(true);
-
     const [Winner,setWinner] = useState("");
 
     const playerUpdated = (newPlayers) => {
@@ -125,13 +139,14 @@ function Deck(){
     if(isValid && isValidPlayer){
       return(
         <div>
-          <div className="gameCodeDiv" style={{backgroundColor : "#f4bcbc"}}>
+          <div className="makeCenter">
+            <div className="gameCodeDiv" style={{backgroundColor : "#f4bcbc"}}>
               <div className="row border-bottom border-dark mb-3">
                 <div className="col">
                   <h1>{players[playerId].name}</h1>
                 </div>
                 <div className="col">
-                  <button onClick={changeName} className="btn btn-light" style={{backgroundColor : "#f4bcbc"}}><i class="fa-solid fa-arrows-rotate"></i></button>
+                  <button onClick={changeName} className="btn btn-light" style={{backgroundColor : "#f4bcbc"}}><i className="fa-solid fa-arrows-rotate"></i></button>
                 </div>
               </div>
               <div className="row">
@@ -164,6 +179,7 @@ function Deck(){
                 <h3>{Seconds}</h3>
               </div>
             </div>
+          </div>
           <div className="makeCenter">
             <div className="makeCenter p-5">
               {cardsValue}  
