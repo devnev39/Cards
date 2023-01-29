@@ -1,15 +1,16 @@
 import { initializeApp } from "firebase/app";
+require("dotenv").config();
 
 const config = {
-  apiKey: "AIzaSyBWcabmCPe9ZjK6ildHKAfUvNZ7Y3p0BgI",
-  authDomain: "cards-a409e.firebaseapp.com",
-  databaseURL: "https://cards-a409e-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "cards-a409e",
-  storageBucket: "cards-a409e.appspot.com",
-  messagingSenderId: "615596806591",
-  appId: "1:615596806591:web:8fc4bb66373075c3b0110a",
-  measurementId: "G-VZWRYMPDDJ",
-  databaseURL:"https://cards-9bb78-default-rtdb.asia-southeast1.firebasedatabase.app/"
+  apiKey: process.env.APIKEY,
+  authDomain: process.env.AUTHDMN,
+  databaseURL: process.env.DBURL,
+  projectId: process.env.PRJID,
+  storageBucket: process.env.STRGBCKT,
+  messagingSenderId: process.env.MSGSNDRID,
+  appId: process.env.APPID,
+  measurementId: process.env.MSRID,
+  databaseURL: process.env.DBURL2
 }
 
 const app = initializeApp(config);
