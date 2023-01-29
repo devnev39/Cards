@@ -8,7 +8,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "server": "node index.js",
     "client" : "npm start --prefix client",
-    "dev" : "concurrently \"npm run server\"\"npm run client\"",
+    "dev" : "concurrently \"npm run server\" \"npm run client\"",
     "render-postbuild": "cd client && npm install && npm run build"
   },
   "keywords": [],
