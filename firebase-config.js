@@ -1,4 +1,5 @@
-require("dotenv").config();
+import * as dotenv from "dotenv"
+dotenv.config();
 import { initializeApp } from "firebase/app";
 
 const config = {
