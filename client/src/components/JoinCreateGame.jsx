@@ -16,7 +16,7 @@ function JoinCreateGame(){
               headers : {"content-type" : "application/json"},
               body : JSON.stringify({gameCode : gameCode})
             }
-            fetch("/joinGame",request).then(res => res.json()).then(data => {
+            fetch("/api/joinGame",request).then(res => res.json()).then(data => {
               if(data.resp){
                 navigate("/game/"+data.gameCode+"/"+data.playerId);
               }else{
@@ -34,7 +34,7 @@ function JoinCreateGame(){
               headers : {"content-type" : "application/json"},
               body : JSON.stringify({playerCount : maxPlayers})
             };
-            fetch("/newGame",request).then((res) => res.json()).then((data) => {
+            fetch("/api/newGame",request).then((res) => res.json()).then((data) => {
                 navigate("/game/"+data.gameCode+"/"+data.playerId);
             });
             

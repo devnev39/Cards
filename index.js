@@ -67,12 +67,12 @@ const verifyGameCode = async (gameCode) => {
     return result;
 }
 
-app.post("/getIp",(req,res) => {
+app.post("/api/getIp",(req,res) => {
     console.log(req.socket.remoteAddress);
     res.json({resp : true});
 });
 
-app.route("/newGame")
+app.route("/api/newGame")
 .post(async (req,res) => {
     let dbref = ref(getDatabase());
     let gameCode = getRandom(gameCodeLen);
@@ -150,7 +150,7 @@ app.route("/newGame")
     res.json(gameResponse);
 })
 
-app.route("/joinGame")
+app.route("/api/joinGame")
 .post((req,res) => {
     let dbref = ref(getDatabase());
     get(child(dbref,"Games/")).then(async (snapshot) => {
@@ -184,7 +184,7 @@ app.route("/joinGame")
     });
 });
 
-app.route("/updates/:gameCode")
+app.route("/api/updates/:gameCode")
 .get(async (req,res) => {
 
     // Now trying timer inverval model !   --> Currently using 
@@ -215,7 +215,7 @@ app.route("/updates/:gameCode")
     res.end();
 }); 
 
-app.route("/cardSelect")
+app.route("/api/cardSelect")
 .post((req,res) => {
     let dbref = ref(getDatabase());
     get(child(dbref,"Games/")).then(snapshot => {
@@ -250,7 +250,7 @@ app.route("/cardSelect")
     })
 });
 
-app.route("/validate")
+app.route("/api/validate")
 .post((req,res) => {
     let dbref = ref(getDatabase());
     get(child(dbref,"Games/")).then(snapshot => {
@@ -276,7 +276,7 @@ app.route("/validate")
     });
 });
 
-app.route("/change")
+app.route("/api/change")
 .post(async (req,res) => {
     const newName = await getRandomName();
     const dbref = ref(getDatabase());
@@ -297,7 +297,7 @@ app.route("/change")
     });
 });
 
-app.route("/winner")
+app.route("/api/winner")
 .post((req,res) => {
     if(activeGames[req.body.gameCode]){
         if(activeGames[req.body.gameCode].completed){
@@ -318,7 +318,7 @@ app.route("/winner")
     }
 });
 
-app.get("/maxPlayers/:gameCode",(req,res) => {
+app.get("/api/maxPlayers/:gameCode",(req,res) => {
     if(activeGames[+req.params.gameCode]){
         if(activeGames[+req.params.gameCode].maxCount) res.json({maxPlayers : activeGames[+req.params.gameCode].maxCount});
         else res.json({message : "maxPlayer lximit not set !"});
@@ -328,7 +328,7 @@ app.get("/maxPlayers/:gameCode",(req,res) => {
 });
 
 if(process.env.NODE_ENV === "production"){
-    app.use(express.static('client/build/'));
+    app.use(express.static('./client/build/'));
     app.get("*",(req,res) => {
         res.sendFile(path.resolve(path.dirname(fileURLToPath(import.meta.url)),'client','build','index.html'));
     });

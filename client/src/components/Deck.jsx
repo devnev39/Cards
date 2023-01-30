@@ -18,7 +18,7 @@ function Deck(){
     const [maxPlayers,setmaxPlayers] = useState(0);
 
     useEffect(() => {
-      fetch(`/maxPlayers/${gameCode}`).then(res => res.json()).then(res => {
+      fetch(`/api/maxPlayers/${gameCode}`).then(res => res.json()).then(res => {
         if(res.message) alert(`Error : ${res.message}`);
         else setmaxPlayers(+res.maxPlayers);
       });
@@ -62,7 +62,7 @@ function Deck(){
         headers : {"content-type":"application/json"},
         body : JSON.stringify({gameCode : gameCode,playerId : playerId})
       }
-      fetch("/validate",request).then(res => res.json()).then((res) => {
+      fetch("/api/validate",request).then(res => res.json()).then((res) => {
         if(res.isValid) setisValid(true);
         if(res.isValidPlayer) setisValidPlayer(true);
         if(res.isValid && res.isValidPlayer){
@@ -74,7 +74,7 @@ function Deck(){
     useEffect(() => {
       console.log("Update useEffect !");
       updateIntervalId = setInterval(() => {
-        fetch("/updates/"+gameCode).then(resp => resp.json()).then(res => {
+        fetch("/api/updates/"+gameCode).then(resp => resp.json()).then(res => {
           if(res.resp){
             if(res.message === "ready"){
               clearInterval(updateIntervalId);
@@ -91,7 +91,7 @@ function Deck(){
                   },
                   body : JSON.stringify({gameCode : gameCode})
                 }
-                fetch("/winner",reponse).then(res => res.json()).then(res => {
+                fetch("/api/winner",reponse).then(res => res.json()).then(res => {
                   if(res.message === undefined){
                     setHidden(false);
                     setWinner(res.name);
@@ -128,7 +128,7 @@ function Deck(){
         },
         body : JSON.stringify({playerId : playerId,gameCode : gameCode})
       };
-      fetch("/change",reponse).then(res => res.json()).then(res => {
+      fetch("/api/change",reponse).then(res => res.json()).then(res => {
         setPlayers(res.players);
       });
     }

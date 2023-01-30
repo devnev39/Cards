@@ -11,7 +11,7 @@ function Card(count,selected,name,Hidden=true){
               headers : {"content-type" : "application/json"},
               body : JSON.stringify({gameCode : gameCode,playerId : playerId,selection : count})
             };
-            fetch("/cardSelect",request).then(res => res.json()).then(data => {
+            fetch("/api/cardSelect",request).then(res => res.json()).then(data => {
               if(data.resp){
                 document.getElementById(`card-${count}`).classList.add("selectedCard");
               }else{
